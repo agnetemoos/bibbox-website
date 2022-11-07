@@ -103,6 +103,7 @@ Request.prototype.send = function send(message, firstVar, callback) {
     var xml = self.buildXML(message);
 
     // Log message before sending it.
+    debug('Request message i send ' + xml);
     self.bus.emit('logger.info', { type: 'FBS', message: message, xml: xml });
 
     var options = {
@@ -116,6 +117,7 @@ Request.prototype.send = function send(message, firstVar, callback) {
     };
 
     try {
+        debug('Options i send ' + JSON.stringify(options));
         var err = null;
         var request = require('request');
         request.post(options, function(error, response, body) {

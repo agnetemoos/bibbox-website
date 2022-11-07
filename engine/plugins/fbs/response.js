@@ -8,6 +8,7 @@
 const util = require('util');
 const eventEmitter = require('events').EventEmitter;
 const Entities = require('html-entities').AllHtmlEntities;
+const debug = require('debug')('bibbox:FBS:request');
 
 /**
  * Response object.
@@ -21,7 +22,7 @@ const Entities = require('html-entities').AllHtmlEntities;
 const Response = function Response(xml, firstVariableName) {
     this.xml = xml;
     this.firstVariableName = firstVariableName;
-
+    debug('Response xml ' + xml);
     this.error = '';
 
     // Parse message from XML.

@@ -16,11 +16,29 @@ services:
     ports:
       - '3306'
     environment:
-      - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_USER=db
-      - MYSQL_PASSWORD=db
-      - MYSQL_DATABASE=db
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
       #- ENCRYPT=1 # Uncomment to enable database encryption.
+    volumes:
+      - db-data:/var/lib/mysql
+
+  db-backup:
+    image: databack/mysql-backup
+    networks:
+      - app
+    depends_on:
+      - mariadb
+    volumes:
+      - ./bibselv-backup:/db
+    environment:
+      - DB_DUMP_TARGET=/db
+      - DB_USER=${MYSQL_USER}
+      - DB_PASS=${MYSQL_PASSWORD}
+      - DB_SERVER=mariadb
+      - DB_DUMP_BEGIN=+3
+      - DB_DUMP_FREQ=1440 # 24 hours
 
   phpfpm:
     image: itkdev/php8.1-fpm:latest
@@ -83,17 +101,6 @@ services:
     volumes:
       - .:/app
 
-  logstash:
-    image: docker.elastic.co/logstash/logstash:7.9.1
-    networks:
-      - app
-    ports:
-      - '28777'
-    volumes:
-      - ./.docker/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
-      - ./.docker/jvm.options:/usr/share/logstash/config/jvm.options:ro
-      - .docker/pipeline:/usr/share/logstash/pipeline:ro
-
   redis:
     image: 'redis:6'
     networks:
@@ -125,17 +132,5 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=frontend"
-
-  mailhog:
-    image: itkdev/mailhog
-    networks:
-      - app
-      - frontend
-    ports:
-      - "1025"
-      - "8025"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=frontend"
-      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}Mailhog.rule=Host(`mailhog-${COMPOSE_DOMAIN}`)"
-      - "traefik.http.services.${COMPOSE_PROJECT_NAME}Mailhog.loadbalancer.server.port=8025"
+volumes:
+  db-data:

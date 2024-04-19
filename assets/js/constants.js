@@ -13,7 +13,7 @@ export const BARCODE_SCANNING_TIMEOUT = 500;
 export const BARCODE_TYPE_COMMAND = "COMMAND";
 export const BARCODE_TYPE_DEFAULT = "DEFAULT";
 export const BARCODE_TYPE_2OF5 = "2OF5";
-export const BARCODE_CODE_COMMAND = "BA03";
+export const BARCODE_CODE_COMMAND = "BD03";
 export const BARCODE_CODE_2OF5 = "BD10";
 
 // Action constants.
